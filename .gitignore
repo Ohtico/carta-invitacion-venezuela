@@ -1,0 +1,16 @@
+# Firebase config (local development only)
+firebase-config.js
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.local
+
+# MacOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
