@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Carta de Invitación - Venezuela</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .info-box p {
+            color: #0c5460;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇻🇪 Generador de Carta de Invitación</h1>
+            <p>Para visitar la República Bolivariana de Venezuela</p>
+        </div>
+
+        <div class="content">
+            <div id="alert" class="alert"></div>
+
+            <div class="info-box">
+                <p><strong>ℹ️ Información:</strong> Complete todos los campos para generar la carta de invitación.</p>
+            </div>
+
+            <form id="invitationForm">
+                <!-- Datos del Invitante -->
+                <div class="section">
+                    <h2>📋 Datos del Invitante</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre Completo *</label>
+                            <input type="text" id="invitanteNombre" placeholder="Ej: JUAN PÉREZ GARCÍA" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cédula de Identidad *</label>
+                            <input type="text" id="invitanteCedula" placeholder="Ej: V 12.345.678" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Ocupación *</label>
+                            <input type="text" id="invitanteOcupacion" placeholder="Ej: INGENIERO" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Datos del Invitado -->
+                <div class="section">
+                    <h2>👤 Datos del Invitado</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre Completo *</label>
+                            <input type="text" id="invitadoNombre" placeholder="Ej: JUAN PÉREZ GARCÍA" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Relación *</label>
+                            <select id="invitadoRelacion" required>
+                                <option value="">Seleccione...</option>
+                                <option value="PAREJA">PAREJA</option>
+                                <option value="ESPOSA">ESPOSA</option>
+                                <option value="ESPOSO">ESPOSO</option>
+                                <option value="HIJO">HIJO</option>
+                                <option value="HIJA">HIJA</option>
+                                <option value="HIJASTRO">HIJASTRO</option>
+                                <option value="HIJASTRA">HIJASTRA</option>
+                                <option value="PADRE">PADRE</option>
+                                <option value="MADRE">MADRE</option>
+                                <option value="HERMANO">HERMANO</option>
+                                <option value="HERMANA">HERMANA</option>
+                                <option value="AMIGO">AMIGO</option>
+                                <option value="AMIGA">AMIGA</option>
+                                <option value="OTRO">OTRO</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="otroRelacionGroup" style="display: none;">
+                            <label>Especifique la Relación *</label>
+                            <input type="text" id="otroRelacion" placeholder="Ej: PRIMO, TÍO, SOBRINO, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Nacionalidad *</label>
+                            <input type="text" id="invitadoNacionalidad" placeholder="Ej: COLOMBIANA" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Edad *</label>
+                            <select id="invitadoEdad" required>
+                                <option value="">Seleccione...</option>
+                                <option value="mayor">Mayor de edad</option>
+                                <option value="menor">Menor de edad</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Número de Pasaporte *</label>
+                            <input type="text" id="invitadoPasaporte" placeholder="Ej: AZ347176" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Número de ID/Cédula *</label>
+                            <input type="text" id="invitadoID" placeholder="Ej: 1023946520" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Ocupación *</label>
+                            <input type="text" id="invitadoOcupacion" placeholder="Ej: ESTUDIANTE" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección *</label>
+                            <input type="text" id="invitadoDireccion" placeholder="Ej: CALLE 123, CIUDAD, PAÍS" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Vía de Transporte *</label>
+                            <select id="viaTransporte" required>
+                                <option value="">Seleccione...</option>
+                                <option value="AÉREA">VÍA AÉREA</option>
+                                <option value="TERRESTRE">VÍA TERRESTRE</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Datos del Viaje -->
+                <div class="section">
+                    <h2>✈️ Datos del Viaje</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Fecha de Ingreso *</label>
+                            <input type="date" id="fechaIngreso" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Regreso *</label>
+                            <input type="date" id="fechaRegreso" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha del Documento *</label>
+                            <input type="date" id="fechaDocumento" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="button-container">
+                    <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
+                        🔄 Limpiar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        📄 Generar PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Establecer fecha actual por defecto
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaDocumento').value = today;
+
+            // Manejar cambio en el select de relación
+            document.getElementById('invitadoRelacion').addEventListener('change', function() {
+                const otroGroup = document.getElementById('otroRelacionGroup');
+                const otroInput = document.getElementById('otroRelacion');
+
+                if (this.value === 'OTRO') {
+                    otroGroup.style.display = 'flex';
+                    otroInput.setAttribute('required', 'required');
+                } else {
+                    otroGroup.style.display = 'none';
+                    otroInput.removeAttribute('required');
+                    otroInput.value = '';
+                }
+            });
+
+            // Validación de fechas en tiempo real
+            const fechaIngresoInput = document.getElementById('fechaIngreso');
+            const fechaRegresoInput = document.getElementById('fechaRegreso');
+
+            // Establecer fecha mínima como hoy para ambos campos
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaIngresoInput.setAttribute('min', hoy);
+            fechaRegresoInput.setAttribute('min', hoy);
+
+            fechaIngresoInput.addEventListener('change', function() {
+                const fechaSeleccionada = this.value;
+                const fechaHoy = new Date().toISOString().split('T')[0];
+
+                // Validar que no sea una fecha pasada
+                if (fechaSeleccionada < fechaHoy) {
+                    mostrarAlerta('⚠️ La fecha de ingreso no puede ser anterior a hoy', 'error');
+                    this.value = '';
+                    return;
+                }
+
+                // Establecer la fecha mínima de regreso como la fecha de ingreso
+                if (fechaSeleccionada) {
+                    fechaRegresoInput.setAttribute('min', fechaSeleccionada);
+
+                    // Si ya hay una fecha de regreso seleccionada, validar
+                    if (fechaRegresoInput.value && fechaRegresoInput.value <= fechaSeleccionada) {
+                        mostrarAlerta('⚠️ La fecha de regreso debe ser posterior a la fecha de ingreso', 'error');
+                        fechaRegresoInput.value = '';
+                    }
+                }
+            });
+
+            fechaRegresoInput.addEventListener('change', function() {
+                const fechaIngreso = fechaIngresoInput.value;
+                const fechaRegreso = this.value;
+                const fechaHoy = new Date().toISOString().split('T')[0];
+
+                // Validar que no sea una fecha pasada
+                if (fechaRegreso < fechaHoy) {
+                    mostrarAlerta('⚠️ La fecha de regreso no puede ser anterior a hoy', 'error');
+                    this.value = '';
+                    return;
+                }
+
+                // Validar que sea posterior a la fecha de ingreso
+                if (fechaIngreso && fechaRegreso && fechaRegreso <= fechaIngreso) {
+                    mostrarAlerta('⚠️ La fecha de regreso debe ser posterior a la fecha de ingreso', 'error');
+                    this.value = '';
+                }
+            });
+        });
+
+        // Función para formatear fecha
+        function formatearFecha(fecha) {
+            const date = new Date(fecha + 'T00:00:00');
+            const dia = date.getDate().toString().padStart(2, '0');
+            const mes = (date.getMonth() + 1).toString().padStart(2, '0');
+            const año = date.getFullYear();
+            return `${dia}/${mes}/${año}`;
+        }
+
+        // Función para formatear fecha en texto
+        function formatearFechaTexto(fecha) {
+            const date = new Date(fecha + 'T00:00:00');
+            const dia = date.getDate();
+            const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 
+                          'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+            const mes = meses[date.getMonth()];
+            const año = date.getFullYear();
+            return `${dia} DE ${mes} del ${año}`;
+        }
+
+        // Función para mostrar alertas
+        function mostrarAlerta(mensaje, tipo) {
+            const alert = document.getElementById('alert');
+            alert.textContent = mensaje;
+            alert.className = `alert ${tipo} show`;
+            setTimeout(() => {
+                alert.className = 'alert';
+            }, 5000);
+        }
+
+        // Función para limpiar formulario
+        function limpiarFormulario() {
+            // Limpiar datos del invitante
+            document.getElementById('invitanteNombre').value = '';
+            document.getElementById('invitanteCedula').value = '';
+            document.getElementById('invitanteOcupacion').value = '';
+
+            // Limpiar datos del invitado
+            document.getElementById('invitadoNombre').value = '';
+            document.getElementById('invitadoRelacion').value = '';
+            document.getElementById('otroRelacion').value = '';
+            document.getElementById('otroRelacionGroup').style.display = 'none';
+            document.getElementById('otroRelacion').removeAttribute('required');
+            document.getElementById('invitadoNacionalidad').value = '';
+            document.getElementById('invitadoEdad').value = '';
+            document.getElementById('invitadoPasaporte').value = '';
+            document.getElementById('invitadoID').value = '';
+            document.getElementById('invitadoOcupacion').value = '';
+            document.getElementById('invitadoDireccion').value = '';
+            document.getElementById('viaTransporte').value = '';
+
+            // Limpiar fechas
+            document.getElementById('fechaIngreso').value = '';
+            document.getElementById('fechaRegreso').value = '';
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaDocumento').value = today;
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('invitationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Validar fechas
+            const fechaIngreso = new Date(document.getElementById('fechaIngreso').value);
+            const fechaRegreso = new Date(document.getElementById('fechaRegreso').value);
+            
+            if (fechaRegreso <= fechaIngreso) {
+                mostrarAlerta('❌ La fecha de regreso debe ser posterior a la fecha de ingreso', 'error');
+                return;
+            }
+
+            try {
+                await generarPDF();
+                mostrarAlerta('✅ PDF generado exitosamente', 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarAlerta('❌ Error al generar el PDF. Por favor, intente nuevamente.', 'error');
+            }
+        });
+
+        // Función para justificar texto en jsPDF
+        function justificarTexto(doc, texto, x, y, maxWidth) {
+            const palabras = texto.trim().split(/\s+/);
+            if (palabras.length === 1) {
+                doc.text(texto, x, y);
+                return;
+            }
+
+            // Calcular el ancho del texto sin espacios extra
+            const textoSinEspacios = palabras.join(' ');
+            const anchoTexto = doc.getTextWidth(textoSinEspacios);
+
+            // Si el texto ya es muy ancho o es la última línea, no justificar
+            if (anchoTexto > maxWidth * 0.95) {
+                doc.text(textoSinEspacios, x, y);
+                return;
+            }
+
+            // Calcular espacio entre palabras para justificar
+            const espacioTotal = maxWidth - doc.getTextWidth(palabras.join(''));
+            const espacioPorPalabra = espacioTotal / (palabras.length - 1);
+
+            // Renderizar cada palabra con el espacio calculado
+            let xPos = x;
+            palabras.forEach((palabra, index) => {
+                doc.text(palabra, xPos, y);
+                if (index < palabras.length - 1) {
+                    xPos += doc.getTextWidth(palabra) + espacioPorPalabra;
+                }
+            });
+        }
+
+        async function generarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Obtener valores del formulario
+            const invitanteNombre = document.getElementById('invitanteNombre').value;
+            const invitanteCedula = document.getElementById('invitanteCedula').value;
+            const invitanteOcupacion = document.getElementById('invitanteOcupacion').value;
+
+            const invitadoNombre = document.getElementById('invitadoNombre').value.toUpperCase();
+            let invitadoRelacion = document.getElementById('invitadoRelacion').value;
+
+            // Si seleccionó "OTRO", usar el valor del campo de texto
+            if (invitadoRelacion === 'OTRO') {
+                invitadoRelacion = document.getElementById('otroRelacion').value.toUpperCase();
+            }
+
+            const invitadoNacionalidad = document.getElementById('invitadoNacionalidad').value.toUpperCase();
+            const invitadoEdad = document.getElementById('invitadoEdad').value === 'mayor' ? 'mayor de edad' : 'menor de edad';
+            const invitadoPasaporte = document.getElementById('invitadoPasaporte').value.toUpperCase();
+            const invitadoID = document.getElementById('invitadoID').value;
+            const invitadoOcupacion = document.getElementById('invitadoOcupacion').value.toUpperCase();
+            const invitadoDireccion = document.getElementById('invitadoDireccion').value.toUpperCase();
+            const viaTransporte = document.getElementById('viaTransporte').value;
+
+            const fechaDocumento = formatearFechaTexto(document.getElementById('fechaDocumento').value);
+            const fechaIngreso = formatearFecha(document.getElementById('fechaIngreso').value);
+            const fechaRegreso = formatearFecha(document.getElementById('fechaRegreso').value);
+
+            // Configurar márgenes y ancho
+            const margin = 20;
+            const pageWidth = doc.internal.pageSize.width;
+            const maxWidth = pageWidth - (margin * 2);
+
+            let yPos = 20;
+
+            // Título - Fecha
+            doc.setFontSize(12);
+            doc.text(fechaDocumento, margin, yPos);
+            yPos += 15;
+
+            // Título principal
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            const titulo = 'INVITACIÓN A UN EXTRANJERO PARA VISITAR VENEZUELA';
+            doc.text(titulo, pageWidth / 2, yPos, { align: 'center' });
+            yPos += 15;
+
+            // Destinatarios
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('SEÑORES:', margin, yPos);
+            yPos += 8;
+            doc.text('SAIME DE LA REPÚBLICA BOLIVARIANA DE VENEZUELA', margin, yPos);
+            yPos += 8;
+            doc.text('MIGRACIÓN VENEZUELA', margin, yPos);
+            yPos += 15;
+
+            // Cuerpo de la carta
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(11);
+
+            const textoPrincipal = `Yo ${invitanteNombre}, VENEZOLANO, mayor de edad, Titular de la cédula de identidad ${invitanteCedula} OCUPACIÓN ${invitanteOcupacion} por medio del presente documento hago constar que he decidido realizar una CORDIAL INVITACIÓN A LA REPÚBLICA BOLIVARIANA DE VENEZUELA, a mi ${invitadoRelacion} ${invitadoNombre} quién es de nacionalidad ${invitadoNacionalidad} ${invitadoEdad} y titular del pasaporte ${invitadoPasaporte} e ID ${invitadoID} su Ocupación ${invitadoOcupacion} con dirección en ${invitadoDireccion} quién visitará LA REPÚBLICA BOLIVARIANA DE VENEZUELA TOCUYITO ESTADO CARABOBO SECTOR LA YAGUARA, CALLE PAEZ, PARCELA 10 MUNICIPIO LIBERTADOR, PARROQUIA TOCUYITO para pasar unos días en mi CASA EN VENEZUELA SU TRASLADO SERÁ VÍA ${viaTransporte}.`;
+
+            const lineas = doc.splitTextToSize(textoPrincipal, maxWidth);
+            const lineHeight = 8; // Interlineado mejorado (era 7 antes)
+
+            // Renderizar texto con justificación y mejor interlineado
+            lineas.forEach((linea, index) => {
+                // No justificar la última línea del párrafo
+                if (index === lineas.length - 1) {
+                    doc.text(linea, margin, yPos);
+                } else {
+                    // Justificar todas las demás líneas
+                    justificarTexto(doc, linea, margin, yPos, maxWidth);
+                }
+                yPos += lineHeight;
+            });
+
+            yPos += 5; // Espacio adicional después del párrafo
+
+            // Agradecimiento
+            doc.text('Agradezco de antemano la atención presentada a mi solicitud.', margin, yPos);
+            yPos += 15;
+
+            // Fechas de viaje
+            doc.text(`Fecha de ingreso: ${fechaIngreso}`, margin, yPos);
+            yPos += 10;
+            doc.text(`Fecha de Regreso: ${fechaRegreso}`, margin, yPos);
+            yPos += 20;
+
+            // Firma
+            doc.text('Atentamente:', margin, yPos);
+            yPos += 25;
+
+            doc.text('_'.repeat(50), margin, yPos);
+            yPos += 8;
+            doc.setFont(undefined, 'bold');
+            doc.text(invitanteNombre, margin, yPos);
+            yPos += 8;
+            doc.text(invitanteCedula, margin, yPos);
+
+            // Guardar PDF
+            const nombreArchivo = `Carta_Invitacion_${invitadoNombre.replace(/\s+/g, '_')}.pdf`;
+            doc.save(nombreArchivo);
+        }
+    </script>
+</body>
+</html>
